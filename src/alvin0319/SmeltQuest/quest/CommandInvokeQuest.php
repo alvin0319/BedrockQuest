@@ -30,7 +30,7 @@ final class CommandInvokeQuest extends Quest{
 	}
 
 	public function getGoal() : string{
-		return "Use {$this->command}";
+		return "Use /{$this->command}";
 	}
 
 	public function getCommand() : string{ return $this->command; }
