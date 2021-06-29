@@ -74,6 +74,12 @@ abstract class Quest implements JsonSerializable{
 		return "";
 	}
 
+	public function getRecords() : array{ return $this->records; }
+
+	public function getProgress(Player $player) : float{
+		return 0.0;
+	}
+
 	public function canStart(Player $player) : bool{
 		if(isset($this->completedPlayers[$player->getLowerCaseName()])){
 			if($this->clearType === self::TYPE_ONCE){
@@ -83,7 +89,7 @@ abstract class Quest implements JsonSerializable{
 				return microtime(true) - $this->completedPlayers[$player->getLowerCaseName()] >= 60 * 60 * 24;
 			}
 		}
-		return true;
+		return !isset($this->playingPlayers[$player->getLowerCaseName()]);
 	}
 
 	public function isStarted(Player $player) : bool{ return isset($this->playingPlayers[$player->getLowerCaseName()]); }
@@ -110,6 +116,8 @@ abstract class Quest implements JsonSerializable{
 		if($ev->isCancelled()){
 			return;
 		}
+
+		unset($this->playingPlayers[$player->getLowerCaseName()]);
 
 		$this->completedPlayers[$player->getLowerCaseName()] = microtime(true);
 		$timeTook = microtime(true) - $this->playingPlayers[$player->getLowerCaseName()];

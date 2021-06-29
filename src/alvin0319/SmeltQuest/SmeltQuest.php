@@ -20,7 +20,10 @@ use pocketmine\lang\BaseLang;
 use pocketmine\Player;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\SingletonTrait;
+use function array_keys;
 use function array_map;
+use function array_search;
+use function array_values;
 use function file_exists;
 use function file_get_contents;
 use function file_put_contents;
@@ -39,6 +42,8 @@ final class SmeltQuest extends PluginBase implements Listener{
 	protected QuestManager $questManager;
 	/** @var QuestSession[] */
 	protected array $sessions = [];
+
+	protected array $categories = [];
 
 	public function onLoad() : void{
 		self::setInstance($this);
@@ -63,6 +68,10 @@ final class SmeltQuest extends PluginBase implements Listener{
 		if(!is_dir($dir = $this->getDataFolder() . "sessions/")){
 			mkdir($dir, 0777);
 		}
+
+		if(file_exists($file = $this->getDataFolder() . "categories.yml")){
+			$this->categories = yaml_parse(file_get_contents($file));
+		}
 	}
 
 	public function onDisable() : void{
@@ -71,6 +80,38 @@ final class SmeltQuest extends PluginBase implements Listener{
 			$this->saveSession($session);
 		}
 		$this->sessions = [];
+		file_put_contents($this->getDataFolder() . "categories.yml", yaml_emit($this->categories));
+	}
+
+	public function createCategory(string $name) : void{
+		$this->categories[$name] = [];
+	}
+
+	public function addQuestToCategory(string $name, Quest $quest) : void{
+		$this->categories[$name][] = $quest->getName();
+	}
+
+	public function removeQuestFromCategory(string $name, Quest $quest) : void{
+		unset($this->categories[$name][array_search($quest->getName(), $this->categories[$name])]);
+		$this->categories[$name] = array_values($this->categories[$name]);
+	}
+
+	public function getCategories() : array{ return array_keys($this->categories); }
+
+	/**
+	 * @param string $name
+	 *
+	 * @return Quest[]
+	 */
+	public function getCategory(string $name) : array{
+		$arr = [];
+		foreach($this->categories[$name] ?? [] as $questName){
+			$quest = $this->questManager->getQuest($questName);
+			if($quest !== null){
+				$arr[] = $quest;
+			}
+		}
+		return $arr;
 	}
 
 	public function saveSession(QuestSession $session) : void{

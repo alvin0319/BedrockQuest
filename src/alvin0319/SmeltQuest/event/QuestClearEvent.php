@@ -28,6 +28,7 @@ final class QuestClearEvent extends QuestEvent{
 	/** @param Item[] $rewards */
 	public function setRewards(array $rewards) : void{
 		(function(Item ...$item) : void{})(...$rewards); // check valid
+		$this->rewards = $rewards;
 	}
 
 	public function setRewardMoney(int $rewardMoney) : void{ $this->rewardMoney = $rewardMoney; }

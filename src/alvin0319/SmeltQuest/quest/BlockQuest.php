@@ -44,6 +44,14 @@ abstract class BlockQuest extends Quest{
 		return $this->getQueue($player) >= $this->count;
 	}
 
+	public function getProgress(Player $player) : float{
+		$queue = $this->getQueue($player);
+		if($queue === 0){
+			return 0;
+		}
+		return (float) ($queue / $this->count) * 100;
+	}
+
 	/**
 	 * Returns the needed block count that player should place/break block
 	 * @return int
