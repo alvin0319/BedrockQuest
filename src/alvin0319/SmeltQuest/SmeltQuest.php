@@ -83,6 +83,10 @@ final class SmeltQuest extends PluginBase implements Listener{
 		file_put_contents($this->getDataFolder() . "categories.yml", yaml_emit($this->categories));
 	}
 
+	public function getQuestManager() : QuestManager{
+		return $this->questManager;
+	}
+
 	public function createCategory(string $name) : void{
 		$this->categories[$name] = [];
 	}

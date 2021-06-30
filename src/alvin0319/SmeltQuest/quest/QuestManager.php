@@ -88,4 +88,14 @@ final class QuestManager{
 		}
 		return null;
 	}
+
+	public static function getQuests() : array{
+		return [
+			BlockBreakQuest::getIdentifier(),
+			BlockPlaceQuest::getIdentifier(),
+			CommandInvokeQuest::getIdentifier(),
+			KillEntityQuest::getIdentifier(),
+			KillPlayerQuest::getIdentifier()
+		];
+	}
 }
