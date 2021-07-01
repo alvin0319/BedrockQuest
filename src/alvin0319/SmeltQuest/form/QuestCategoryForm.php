@@ -17,8 +17,8 @@ final class QuestCategoryForm implements Form{
 		$this->categories = SmeltQuest::getInstance()->getCategories();
 		return [
 			"type" => "form",
-			"title" => SmeltQuest::$lang->translateString("form.title"),
-			"content" => SmeltQuest::$lang->translateString("form.content"),
+			"title" => SmeltQuest::$lang->translateString("form.category.title"),
+			"content" => SmeltQuest::$lang->translateString("form.category.content"),
 			"buttons" => array_map(function(string $name) : array{
 				return ["text" => "§l{$name}"];
 			}, $this->categories)

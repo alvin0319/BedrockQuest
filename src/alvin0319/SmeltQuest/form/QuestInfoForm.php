@@ -6,6 +6,7 @@ namespace alvin0319\SmeltQuest\form;
 
 use alvin0319\SmeltQuest\quest\Quest;
 use alvin0319\SmeltQuest\SmeltQuest;
+use alvin0319\SmeltQuest\util\TimeUtil;
 use pocketmine\form\Form;
 use pocketmine\item\Item;
 use pocketmine\Player;
@@ -29,23 +30,31 @@ final class QuestInfoForm implements Form{
 	}
 
 	public function jsonSerialize() : array{
-		$status = $this->quest->canStart($this->player) ? "§cIncomplete" : "§aCompleted";
-		$content = "§f - Quest info - \n\n§eGoal: §f{$this->quest->getGoal()}\n\n§eStatus: §f{$status}\n\n§f - Rewards - \n\n";
+		if($this->quest->canStart($this->player)){
+			$status = "§cIncomplete";
+		}else{
+			if($this->quest->isStarted($this->player)){
+				$status = "§cIncomplete";
+			}else{
+				$status = "§aCompleted";
+			}
+		}
+		$content = "§f - Quest info - \n\n§eDescription: §f{$this->quest->getDescription()}§r\n\n§eGoal: §f{$this->quest->getGoal()}\n\n§eStatus: §f{$status}\n\n§f - Rewards - \n\n";
 		if($this->quest->getRewardMoney() > 0){
 			$content .= "§eMoney: §f{$this->quest->getRewardMoney()}\n";
 		}
 		if(count($this->quest->getRewards()) > 0){
 			$content .= "§eItems: §f" . implode(", ", array_map(function(Item $item) : string{
 					return $item->getName() . " x" . $item->getCount();
-				}, $this->quest->getRewards()));
+				}, $this->quest->getRewards())) . "\n";
 		}
-		if(!$this->quest->canStart($this->player)){
-			$progress = round($this->quest->getProgress($this->player));
+		if(!$this->quest->canStart($this->player) && $this->quest->isStarted($this->player)){
+			$progress = round($this->quest->getProgress($this->player), 2);
 
 			$now = (int) (($this->quest->getProgress($this->player) / 100) * 20);
 			$left = 20 - $now;
 
-			$content .= "\n\n§eProgress: " . str_repeat("§a=", $now) . str_repeat("§c=", $left) . "§f({$progress}%%)";
+			$content .= "\n§eProgress: " . str_repeat("§a=", $now) . str_repeat("§c=", $left) . "§f({$progress}%%)";
 		}
 
 		$records = $this->quest->getRecords();
@@ -53,12 +62,13 @@ final class QuestInfoForm implements Form{
 
 		$records = array_slice($records, 0, 5);
 
-		$content .= "§f- Quest record rank -\n\n";
+		$content .= "\n\n§f- Quest record rank -\n\n";
 
 		$rank = 0;
 		foreach($records as $name => $record){
 			++$rank;
-			$content .= "§e{$rank}§f: " . round($record, 2);
+			$timeUnit = TimeUtil::convertTime((int) round($record, 2));
+			$content .= "§e{$rank}($name)§f: " . $timeUnit[1] . " hours " . $timeUnit[2] . " minutes " . $timeUnit[3] . " seconds\n";
 		}
 
 		$data = [
@@ -66,7 +76,7 @@ final class QuestInfoForm implements Form{
 			"title" => $this->quest->getName(),
 			"content" => $content,
 			"buttons" => [
-				["text" => "§lLeave"]
+				["text" => "Leave"]
 			]
 		];
 		if($this->quest->canStart($this->player)){

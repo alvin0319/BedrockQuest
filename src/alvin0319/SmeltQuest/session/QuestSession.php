@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace alvin0319\SmeltQuest\session;
 
-use alvin0319\SmeltQuest\quest\BlockQuest;
+use alvin0319\SmeltQuest\quest\BlockBreakQuest;
+use alvin0319\SmeltQuest\quest\BlockPlaceQuest;
 use alvin0319\SmeltQuest\quest\CommandInvokeQuest;
 use alvin0319\SmeltQuest\quest\EntityQuest;
 use alvin0319\SmeltQuest\quest\KillEntityQuest;
 use alvin0319\SmeltQuest\quest\Quest;
 use pocketmine\command\Command;
 use pocketmine\event\block\BlockBreakEvent;
-use pocketmine\event\block\BlockEvent;
 use pocketmine\event\block\BlockPlaceEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDeathEvent;
@@ -20,7 +20,12 @@ use pocketmine\event\player\PlayerCommandPreprocessEvent;
 use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\Player;
 use function array_values;
+use function explode;
+use function preg_match_all;
+use function str_replace;
+use function stripslashes;
 use function substr;
+use function var_dump;
 
 final class QuestSession{
 
@@ -85,11 +90,44 @@ final class QuestSession{
 		$this->checkKilled($event);
 	}
 
-	public function checkBlock(BlockEvent $event) : void{
+	public function onCommandInvoke(PlayerCommandPreprocessEvent $event) : void{
+		$commandString = $event->getMessage();
+		if(substr($commandString, 0, 1) === "/" || substr($commandString, 0, 2) === "./"){ // blame shoghi
+			$commandString = str_replace(["/", "./"], ["", ""], $commandString);
+			$args = [];
+			preg_match_all('/"((?:\\\\.|[^\\\\"])*)"|(\S+)/u', $commandString, $matches);
+			foreach($matches[0] as $k => $_){
+				for($i = 1; $i <= 2; ++$i){
+					if($matches[$i][$k] !== ""){
+						$args[$k] = stripslashes($matches[$i][$k]);
+						break;
+					}
+				}
+			}
+			$sentCommandLabel = "";
+			$command = $this->player->getServer()->getCommandMap()->matchCommand($sentCommandLabel, $args);
+			if($command instanceof Command){
+				foreach($this->quests as $name => $quest){
+					if($quest instanceof CommandInvokeQuest){
+						if($quest->getCommandObj() !== null){
+							if($quest->getCommandObj()->getName() === $command->getName() && $args === $quest->getArgs()){
+								$this->completeQuest($quest);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	public function onBlockBreak(BlockBreakEvent $event) : void{
 		$block = $event->getBlock();
 		foreach($this->quests as $name => $quest){
-			if($quest instanceof BlockQuest){
-				if($block->getId() !== $quest->getBlock()->getId() || $block->getDamage() !== $event->getBlock()->getDamage()){
+			if($quest instanceof BlockBreakQuest){
+				if($block->getId() !== $quest->getBlock()->getId()){
+					continue;
+				}
+				if($block->getDamage() !== $quest->getBlock()->getDamage()){
 					continue;
 				}
 				$quest->addQueue($this->player, 1);
@@ -100,29 +138,22 @@ final class QuestSession{
 		}
 	}
 
-	public function onCommandInvoke(PlayerCommandPreprocessEvent $event) : void{
-		$commandString = $event->getMessage();
-		if(substr($commandString, 0, 1) === "/" || substr($commandString, 0, 2) === "./"){ // blame shoghi
-			$args = [];
-			$command = $this->player->getServer()->getCommandMap()->matchCommand($commandString, $args);
-			if($command instanceof Command){
-				foreach($this->quests as $name => $quest){
-					if($quest instanceof CommandInvokeQuest){
-						if($quest->getCommand() === $command->getName()){
-							$this->completeQuest($quest);
-						}
-					}
+	public function onBlockPlace(BlockPlaceEvent $event) : void{
+		$block = $event->getBlock();
+		foreach($this->quests as $name => $quest){
+			if($quest instanceof BlockPlaceQuest){
+				if($block->getId() !== $quest->getBlock()->getId()){
+					continue;
+				}
+				if($block->getDamage() !== $quest->getBlock()->getDamage()){
+					continue;
+				}
+				$quest->addQueue($this->player, 1);
+				if($quest->canComplete($this->player)){
+					$this->completeQuest($quest);
 				}
 			}
 		}
-	}
-
-	public function onBlockBreak(BlockBreakEvent $event) : void{
-		$this->checkBlock($event);
-	}
-
-	public function onBlockPlace(BlockPlaceEvent $event) : void{
-		$this->checkBlock($event);
 	}
 
 	/** @return Quest[] */

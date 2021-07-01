@@ -4,19 +4,17 @@ declare(strict_types=1);
 
 namespace alvin0319\SmeltQuest\form;
 
-use alvin0319\SmeltQuest\quest\KillEntityQuest;
+use alvin0319\SmeltQuest\quest\KillPlayerQuest;
 use alvin0319\SmeltQuest\SmeltQuest;
 use pocketmine\form\Form;
 use pocketmine\network\mcpe\protocol\AddActorPacket;
 use pocketmine\Player;
 use function array_keys;
-use function array_map;
-use function array_values;
+use function array_shift;
 use function count;
 use function is_numeric;
-use function str_replace;
 
-final class KillEntityQuestCreateForm implements Form{
+final class KillPlayerQuestCreateForm implements Form{
 
 	protected array $data;
 
@@ -27,13 +25,8 @@ final class KillEntityQuestCreateForm implements Form{
 	public function jsonSerialize() : array{
 		return [
 			"type" => "custom_form",
-			"title" => "KillEntity quest create form",
+			"title" => "KillPlayer quest create form",
 			"content" => [
-				[
-					"type" => "dropdown",
-					"text" => "Entity Network id",
-					"options" => array_map(fn(string $name) => str_replace("minecraft:", "", $name), array_values(AddActorPacket::LEGACY_ID_MAP_BC))
-				],
 				[
 					"type" => "input",
 					"text" => "Count of entities that player need to kill"
@@ -43,19 +36,18 @@ final class KillEntityQuestCreateForm implements Form{
 	}
 
 	public function handleResponse(Player $player, $data) : void{
-		if($data === null || count($data) !== 2){
+		if($data === null || count($data) !== 1){
 			return;
 		}
 		$success = false;
 		try{
-			[$entityNetId, $count] = $data;
+			$count = array_shift($data);
 			if(!is_numeric($count) || ($count = (int) $count) < 1){
 				$player->sendMessage(SmeltQuest::$prefix . "Count must be at least 1.");
 				return;
 			}
 			$map = array_keys(AddActorPacket::LEGACY_ID_MAP_BC);
-			$entityNetId = $map[$entityNetId];
-			$quest = new KillEntityQuest(
+			$quest = new KillPlayerQuest(
 				$this->data["name"],
 				$this->data["description"],
 				$this->data["clearType"],
@@ -65,8 +57,7 @@ final class KillEntityQuestCreateForm implements Form{
 				0,
 				[],
 				$count,
-				[],
-				$entityNetId
+				[]
 			);
 			SmeltQuest::getInstance()->getQuestManager()->registerQuest($quest);
 			SmeltQuest::getInstance()->addQuestToCategory($this->data["questCategory"], $quest);

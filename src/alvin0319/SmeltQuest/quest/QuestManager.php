@@ -6,6 +6,7 @@ namespace alvin0319\SmeltQuest\quest;
 
 use alvin0319\SmeltQuest\SmeltQuest;
 use function array_diff;
+use function array_values;
 use function count;
 use function file_exists;
 use function file_get_contents;
@@ -71,6 +72,10 @@ final class QuestManager{
 
 	public function getQuest(string $name) : ?Quest{
 		return $this->quests[$name] ?? null;
+	}
+
+	public function getQuestList() : array{
+		return array_values($this->quests);
 	}
 
 	public static function fromData(array $data) : ?Quest{

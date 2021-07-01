@@ -102,6 +102,7 @@ final class BlockQuestCreateForm implements Form{
 						return;
 				}
 				SmeltQuest::getInstance()->getQuestManager()->registerQuest($quest);
+				SmeltQuest::getInstance()->addQuestToCategory($this->data["questCategory"], $quest);
 				$player->sendMessage(SmeltQuest::$prefix . "Success! Don't forget to add rewards!");
 				$success = true;
 			}catch(InvalidArgumentException $e){

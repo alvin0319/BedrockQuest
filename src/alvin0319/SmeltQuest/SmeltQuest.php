@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace alvin0319\SmeltQuest;
 
+use alvin0319\SmeltQuest\command\QuestCommand;
 use alvin0319\SmeltQuest\quest\Quest;
 use alvin0319\SmeltQuest\quest\QuestManager;
 use alvin0319\SmeltQuest\session\QuestSession;
+use muqsit\invmenu\InvMenu;
+use muqsit\invmenu\InvMenuHandler;
 use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\event\block\BlockPlaceEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
@@ -21,9 +24,9 @@ use pocketmine\Player;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\SingletonTrait;
 use function array_keys;
-use function array_map;
 use function array_search;
 use function array_values;
+use function class_exists;
 use function file_exists;
 use function file_get_contents;
 use function file_put_contents;
@@ -43,6 +46,7 @@ final class SmeltQuest extends PluginBase implements Listener{
 	/** @var QuestSession[] */
 	protected array $sessions = [];
 
+	/** @var Quest[][] */
 	protected array $categories = [];
 
 	public function onLoad() : void{
@@ -50,6 +54,14 @@ final class SmeltQuest extends PluginBase implements Listener{
 	}
 
 	public function onEnable() : void{
+		if(!class_exists(InvMenu::class)){
+			$this->getLogger()->info("InvMenu not found");
+			$this->getServer()->getPluginManager()->disablePlugin($this);
+			return;
+		}
+		if(!InvMenuHandler::isRegistered()){
+			InvMenuHandler::register($this);
+		}
 		$this->getServer()->getPluginManager()->registerEvents($this, $this);
 		$this->questManager = new QuestManager($this);
 		$this->saveDefaultConfig();
@@ -72,6 +84,8 @@ final class SmeltQuest extends PluginBase implements Listener{
 		if(file_exists($file = $this->getDataFolder() . "categories.yml")){
 			$this->categories = yaml_parse(file_get_contents($file));
 		}
+
+		$this->getServer()->getCommandMap()->register("smeltcommand", new QuestCommand());
 	}
 
 	public function onDisable() : void{
@@ -100,6 +114,17 @@ final class SmeltQuest extends PluginBase implements Listener{
 		$this->categories[$name] = array_values($this->categories[$name]);
 	}
 
+	public function getCategoryFromQuest(Quest $quest) : ?string{
+		foreach($this->categories as $name => $quests){
+			foreach($quests as $q){
+				if($q->getName() === $quest->getName()){
+					return $name;
+				}
+			}
+		}
+		return null;
+	}
+
 	public function getCategories() : array{ return array_keys($this->categories); }
 
 	/**
@@ -107,9 +132,12 @@ final class SmeltQuest extends PluginBase implements Listener{
 	 *
 	 * @return Quest[]
 	 */
-	public function getCategory(string $name) : array{
+	public function getCategory(string $name) : ?array{
+		if(!isset($this->categories[$name])){
+			return null;
+		}
 		$arr = [];
-		foreach($this->categories[$name] ?? [] as $questName){
+		foreach($this->categories[$name] as $questName){
 			$quest = $this->questManager->getQuest($questName);
 			if($quest !== null){
 				$arr[] = $quest;
@@ -119,7 +147,11 @@ final class SmeltQuest extends PluginBase implements Listener{
 	}
 
 	public function saveSession(QuestSession $session) : void{
-		file_put_contents($this->getDataFolder() . "sessions/{$session->getPlayer()->getName()}.yml", yaml_emit(array_map(fn(Quest $quest) => $quest->getName(), $session->getQuests())));
+		$quests = [];
+		foreach($session->getQuests() as $quest){
+			$quests[$quest->getName()] = $quest->getName();
+		}
+		file_put_contents($this->getDataFolder() . "sessions/{$session->getPlayer()->getName()}.yml", yaml_emit($quests));
 	}
 
 	public function loadSession(Player $player) : QuestSession{
@@ -129,7 +161,7 @@ final class SmeltQuest extends PluginBase implements Listener{
 		$data = [];
 		if(file_exists($file = $this->getDataFolder() . "sessions/{$player->getName()}.yml")){
 			$d = yaml_parse(file_get_contents($file));
-			foreach($d as $name){
+			foreach($d as $name => $name_){
 				$quest = $this->questManager->getQuest($name);
 				if($quest !== null){
 					$data[$quest->getName()] = $quest;

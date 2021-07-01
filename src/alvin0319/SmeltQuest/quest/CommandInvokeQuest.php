@@ -4,11 +4,19 @@ declare(strict_types=1);
 
 namespace alvin0319\SmeltQuest\quest;
 
+use pocketmine\command\Command;
+use pocketmine\Server;
 use function array_merge;
+use function preg_match_all;
+use function stripslashes;
 
 final class CommandInvokeQuest extends Quest{
 
 	protected string $command;
+
+	protected ?Command $tempCommand = null;
+
+	protected array $tempArgs = [];
 
 	public function __construct(
 		string $name,
@@ -34,6 +42,30 @@ final class CommandInvokeQuest extends Quest{
 	}
 
 	public function getCommand() : string{ return $this->command; }
+
+	public function getCommandObj() : ?Command{
+		if($this->tempCommand !== null){
+			return $this->tempCommand;
+		}
+		$args = [];
+		preg_match_all('/"((?:\\\\.|[^\\\\"])*)"|(\S+)/u', $this->getCommand(), $matches);
+		foreach($matches[0] as $k => $_){
+			for($i = 1; $i <= 2; ++$i){
+				if($matches[$i][$k] !== ""){
+					$args[$k] = stripslashes($matches[$i][$k]);
+					break;
+				}
+			}
+		}
+		$sentCommandLabel = "";
+		$target = Server::getInstance()->getCommandMap()->matchCommand($sentCommandLabel, $args);
+		$this->tempArgs = $args;
+		return $this->tempCommand = $target;
+	}
+
+	public function getArgs() : array{
+		return $this->tempArgs;
+	}
 
 	public function jsonSerialize() : array{
 		return array_merge(

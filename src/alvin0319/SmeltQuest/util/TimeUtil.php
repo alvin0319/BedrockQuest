@@ -11,17 +11,17 @@ final class TimeUtil{
 		$hour = 0;
 		$minute = 0;
 		while($time >= 60 * 60 * 24){
-			$day++;
+			$day += 1;
 			$time -= 60 * 60 * 24;
 		}
 		while($time >= 60 * 60){
-			$hour++;
+			$hour += 1;
 			$time -= 60 * 60;
 		}
 		while($time >= 60){
-			$minute++;
+			$minute += 1;
 			$time -= 60;
 		}
-		return [$day, $hour, $minute];
+		return [$day, $hour, $minute, $time];
 	}
 }

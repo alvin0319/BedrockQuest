@@ -14,6 +14,7 @@ use pocketmine\Player;
 use function array_map;
 use function implode;
 use function microtime;
+use function round;
 
 abstract class Quest implements JsonSerializable{
 
@@ -74,10 +75,24 @@ abstract class Quest implements JsonSerializable{
 		return "";
 	}
 
+	public function setRewards(array $rewards) : void{
+		(function(Item ...$item) : void{ })(...$rewards);
+		$this->rewards = $rewards;
+	}
+
+	public function setRewardMoney(int $rewardMoney) : void{ $this->rewardMoney = $rewardMoney; }
+
 	public function getRecords() : array{ return $this->records; }
 
 	public function getProgress(Player $player) : float{
 		return 0.0;
+	}
+
+	public function onProgressAdded(Player $player) : void{
+		$player->sendPopup("{$this->getName()}: " . round($this->getProgress($player), 2) . "%%");
+	}
+
+	public function onPlayerRemoved(Player $player) : void{
 	}
 
 	public function canStart(Player $player) : bool{
@@ -117,10 +132,11 @@ abstract class Quest implements JsonSerializable{
 			return;
 		}
 
-		unset($this->playingPlayers[$player->getLowerCaseName()]);
-
 		$this->completedPlayers[$player->getLowerCaseName()] = microtime(true);
+
 		$timeTook = microtime(true) - $this->playingPlayers[$player->getLowerCaseName()];
+
+		unset($this->playingPlayers[$player->getLowerCaseName()]);
 
 		$player->getInventory()->addItem(...$ev->getRewards());
 
@@ -133,6 +149,8 @@ abstract class Quest implements JsonSerializable{
 				implode(", ", array_map(fn(Item $item) => $item->getName() . " x" . $item->getCount(), $ev->getRewards()))
 			]));
 
+		$this->onPlayerRemoved($player);
+
 		if(isset($this->records[$player->getLowerCaseName()])){
 			if($timeTook <= $this->records[$player->getLowerCaseName()]){
 				return;
@@ -141,13 +159,22 @@ abstract class Quest implements JsonSerializable{
 
 		$previousRecord = $this->records[$player->getName()] ?? 0;
 
-		$previousTimestamp = TimeUtil::convertTime($previousRecord);
+		$previousTimestamp = TimeUtil::convertTime((int) $previousRecord);
+
+		$timeTookTimestamp = TimeUtil::convertTime((int) $timeTook);
+
+		$this->records[$player->getName()] = $timeTook;
 
 		$player->sendMessage(SmeltQuest::$prefix . SmeltQuest::$lang->translateString("quest.message.completed.newrecord", [
 				SmeltQuest::$lang->translateString("time.format", [
-					$previousTimestamp[0],
 					$previousTimestamp[1],
-					$previousTimestamp[2]
+					$previousTimestamp[2],
+					$previousTimestamp[3]
+				]),
+				SmeltQuest::$lang->translateString("time.format", [
+					$timeTookTimestamp[1],
+					$timeTookTimestamp[2],
+					$timeTookTimestamp[3]
 				])
 			]));
 	}
@@ -162,7 +189,7 @@ abstract class Quest implements JsonSerializable{
 			"records" => $this->records,
 			"rewardMoney" => $this->rewardMoney,
 			"rewards" => array_map(fn(Item $item) => $item->jsonSerialize(), $this->rewards),
-			"identifier" => self::getIdentifier()
+			"identifier" => static::getIdentifier()
 		];
 	}
 

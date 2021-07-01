@@ -28,7 +28,16 @@ final class QuestCategoryInfoForm implements Form{
 			"title" => SmeltQuest::$lang->translateString("form.category.info.title"),
 			"content" => SmeltQuest::$lang->translateString("form.category.info.content"),
 			"buttons" => array_map(function(Quest $quest) : array{
-				return ["text" => (string) $quest->getName() . "\n" . ($quest->canStart($this->player)) ? "§cIncomplete" : "§aCompleted"];
+				if($quest->canStart($this->player)){
+					$status = "§cIncomplete";
+				}else{
+					if($quest->isStarted($this->player)){
+						$status = "§cIncomplete";
+					}else{
+						$status = "§aCompleted";
+					}
+				}
+				return ["text" => $quest->getName() . "\n" . $status];
 			}, $this->quests)
 		];
 	}
