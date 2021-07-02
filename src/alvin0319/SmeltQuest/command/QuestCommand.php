@@ -24,7 +24,7 @@ final class QuestCommand extends Command{
 		parent::__construct("quest", "Open the Quest UI");
 		$this->setPermission("smeltquest.command.use");
 		$this->setAliases(["q"]);
-		$this->setUsage("/{$this->getName()} <create|remove|reward|category>");
+		$this->setUsage("/{$this->getName()} <create|remove|reward|category|addcmd>");
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args) : bool{
