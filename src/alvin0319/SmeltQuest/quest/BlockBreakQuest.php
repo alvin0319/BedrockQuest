@@ -7,6 +7,9 @@ namespace alvin0319\SmeltQuest\quest;
 final class BlockBreakQuest extends BlockQuest{
 
 	public function getGoal() : string{
+		if($this->getAllowAllBlocks()){
+			return "Break {$this->count} blocks";
+		}
 		return "Break block {$this->block->getName()} x{$this->count}";
 	}
 
@@ -27,7 +30,9 @@ final class BlockBreakQuest extends BlockQuest{
 			$data["blockId"],
 			$data["blockMeta"],
 			$data["count"],
-			$data["blockQueue"]
+			$data["blockQueue"],
+			$data["executeCommands"],
+			$data["allowAllBlocks"]
 		);
 	}
 }

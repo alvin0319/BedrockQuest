@@ -15,13 +15,14 @@ use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\Player;
 use function array_shift;
 use function count;
+use function in_array;
 use function is_numeric;
 
 final class QuestCommand extends Command{
 
 	public function __construct(){
 		parent::__construct("quest", "Open the Quest UI");
-		$this->setDescription("smeltquest.command.use");
+		$this->setPermission("smeltquest.command.use");
 		$this->setAliases(["q"]);
 		$this->setUsage("/{$this->getName()} <create|remove|reward|category>");
 	}
@@ -100,6 +101,27 @@ final class QuestCommand extends Command{
 				}
 				SmeltQuest::getInstance()->createCategory($category);
 				$sender->sendMessage(SmeltQuest::$prefix . "Category {$category} created!");
+				break;
+			case "addcmd":
+				if(count($args) < 3){
+					$sender->sendMessage(SmeltQuest::$prefix . "Usage: /{$commandLabel} addcmd <quest> <cmd> <console|player>");
+					$sender->sendMessage(SmeltQuest::$prefix . "Supported tags: @player");
+					return false;
+				}
+				$questName = array_shift($args);
+				$command = array_shift($args);
+				$consoleOrPlayer = array_shift($args);
+				$quest = SmeltQuest::getInstance()->getQuestManager()->getQuest($questName);
+				if($quest === null){
+					$sender->sendMessage(SmeltQuest::$prefix . "Quest {$questName} not found.");
+					return false;
+				}
+				if(!in_array($consoleOrPlayer, ["console", "player"])){
+					$sender->sendMessage(SmeltQuest::$prefix . "Invalid command dispatch type (expected \"console\", \"player\", got \"$consoleOrPlayer\")");
+					return false;
+				}
+				$quest->addExecuteCommand($command, $consoleOrPlayer);
+				$sender->sendMessage(SmeltQuest::$prefix . "Command {$command} has been added to quest.");
 				break;
 			default:
 				throw new InvalidCommandSyntaxException();

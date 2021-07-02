@@ -54,6 +54,7 @@ final class CommandInvokeQuestCreateForm implements Form{
 				[],
 				0,
 				[],
+				[],
 				$command
 			);
 			$player->sendMessage(SmeltQuest::$prefix . "Success! Don't forget to add rewards!");

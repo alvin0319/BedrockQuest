@@ -16,6 +16,8 @@ abstract class BlockQuest extends Quest{
 
 	protected int $count;
 
+	protected bool $allowAllBlocks = false;
+
 	public function __construct(
 		string $name,
 		string $description,
@@ -28,12 +30,15 @@ abstract class BlockQuest extends Quest{
 		int $blockId,
 		int $blockMeta,
 		int $count,
-		array $queue
+		array $queue,
+		array $executeCommands = [],
+		bool $allowAllBlocks = false
 	){
-		parent::__construct($name, $description, $clearType, $playingPlayers, $completedPlayers, $records, $rewardMoney, $rewards);
+		parent::__construct($name, $description, $clearType, $playingPlayers, $completedPlayers, $records, $rewardMoney, $rewards, $executeCommands);
 		$this->block = BlockFactory::get($blockId, $blockMeta);
 		$this->count = $count;
 		$this->queue = $queue;
+		$this->allowAllBlocks = $allowAllBlocks;
 	}
 
 	public function getBlock() : Block{
@@ -43,6 +48,8 @@ abstract class BlockQuest extends Quest{
 	public function canComplete(Player $player) : bool{
 		return $this->getQueue($player) >= $this->count;
 	}
+
+	public function getAllowAllBlocks() : bool{ return $this->allowAllBlocks; }
 
 	public function getProgress(Player $player) : float{
 		$queue = $this->getQueue($player);
@@ -63,7 +70,7 @@ abstract class BlockQuest extends Quest{
 	public function jsonSerialize() : array{
 		return array_merge(
 			parent::jsonSerialize(),
-			["blockId" => $this->block->getId(), "blockMeta" => $this->block->getDamage(), "count" => $this->count, "blockQueue" => $this->queue]
+			["blockId" => $this->block->getId(), "blockMeta" => $this->block->getDamage(), "count" => $this->count, "blockQueue" => $this->queue, "allowAllBlocks" => $this->allowAllBlocks]
 		);
 	}
 }

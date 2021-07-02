@@ -39,6 +39,11 @@ final class BlockQuestCreateForm implements Form{
 				[
 					"type" => "input",
 					"text" => "Count of block that player need to break/place block"
+				],
+				[
+					"type" => "toggle",
+					"text" => "Allow players to clear this quest without any condition",
+					"default" => false
 				]
 			]
 		];
@@ -47,18 +52,23 @@ final class BlockQuestCreateForm implements Form{
 	public function handleResponse(Player $player, $data) : void{
 		$success = false;
 		try{
-			if($data === null || count($data) !== 3){
+			if($data === null || count($data) !== 4){
 				return;
 			}
-			[$id, $meta, $count] = $data;
+			[$id, $meta, $count, $allowAnyCondition] = $data;
 
-			if(!is_numeric($id) || !is_numeric($meta) || !is_numeric($count)){
-				$player->sendMessage(SmeltQuest::$prefix . "ID and Meta must be int");
-				return;
+			if(!$allowAnyCondition){
+				if(!is_numeric($id) || !is_numeric($meta) || !is_numeric($count)){
+					$player->sendMessage(SmeltQuest::$prefix . "ID and Meta must be int");
+					return;
+				}
+				[$id, $meta, $count] = array_map(fn($a) => (int) $a, [$id, $meta, $count]);
+
+			}else{
+				$id = 0;
+				$meta = 0;
 			}
-			[$id, $meta, $count] = array_map(fn($a) => (int) $a, [$id, $meta, $count]);
-
-			if($count < 1){
+			if(!is_numeric($count) || ($count = (int) $count) < 1){
 				$player->sendMessage(SmeltQuest::$prefix . "Count must be at least 1");
 				return;
 			}
@@ -78,7 +88,9 @@ final class BlockQuestCreateForm implements Form{
 							$block->getId(),
 							$block->getDamage(),
 							$count,
-							[]
+							[],
+							[],
+							$allowAnyCondition
 						);
 						break;
 					case BlockPlaceQuest::getIdentifier():
@@ -94,7 +106,9 @@ final class BlockQuestCreateForm implements Form{
 							$block->getId(),
 							$block->getDamage(),
 							$count,
-							[]
+							[],
+							[],
+							$allowAnyCondition
 						);
 						break;
 					default:

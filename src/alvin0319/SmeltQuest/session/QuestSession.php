@@ -124,11 +124,14 @@ final class QuestSession{
 		$block = $event->getBlock();
 		foreach($this->quests as $name => $quest){
 			if($quest instanceof BlockBreakQuest){
-				if($block->getId() !== $quest->getBlock()->getId()){
-					continue;
-				}
-				if($block->getDamage() !== $quest->getBlock()->getDamage()){
-					continue;
+				if(!$quest->getAllowAllBlocks()){
+					echo "tf\n";
+					if($block->getId() !== $quest->getBlock()->getId()){
+						continue;
+					}
+					if($block->getDamage() !== $quest->getBlock()->getDamage()){
+						continue;
+					}
 				}
 				$quest->addQueue($this->player, 1);
 				if($quest->canComplete($this->player)){
@@ -142,11 +145,14 @@ final class QuestSession{
 		$block = $event->getBlock();
 		foreach($this->quests as $name => $quest){
 			if($quest instanceof BlockPlaceQuest){
-				if($block->getId() !== $quest->getBlock()->getId()){
-					continue;
-				}
-				if($block->getDamage() !== $quest->getBlock()->getDamage()){
-					continue;
+				if(!$quest->getAllowAllBlocks()){
+					echo "tf?\n";
+					if($block->getId() !== $quest->getBlock()->getId()){
+						continue;
+					}
+					if($block->getDamage() !== $quest->getBlock()->getDamage()){
+						continue;
+					}
 				}
 				$quest->addQueue($this->player, 1);
 				if($quest->canComplete($this->player)){

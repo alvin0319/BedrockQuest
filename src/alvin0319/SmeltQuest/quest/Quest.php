@@ -9,12 +9,15 @@ use alvin0319\SmeltQuest\SmeltQuest;
 use alvin0319\SmeltQuest\util\TimeUtil;
 use JsonSerializable;
 use onebone\economyapi\EconomyAPI;
+use pocketmine\command\ConsoleCommandSender;
 use pocketmine\item\Item;
 use pocketmine\Player;
 use function array_map;
+use function array_search;
 use function implode;
 use function microtime;
 use function round;
+use function str_replace;
 
 abstract class Quest implements JsonSerializable{
 
@@ -36,6 +39,8 @@ abstract class Quest implements JsonSerializable{
 	/** @var Item[] */
 	protected array $rewards = [];
 
+	protected array $executeCommands = [];
+
 	public function __construct(
 		string $name,
 		string $description,
@@ -44,7 +49,8 @@ abstract class Quest implements JsonSerializable{
 		array $completedPlayers,
 		array $records,
 		int $rewardMoney,
-		array $rewards
+		array $rewards,
+		array $executeCommands = []
 	){
 		$this->name = $name;
 		$this->description = $description;
@@ -54,6 +60,7 @@ abstract class Quest implements JsonSerializable{
 		$this->records = $records;
 		$this->rewardMoney = $rewardMoney;
 		$this->rewards = array_map(fn(array $data) => Item::jsonDeserialize($data), $rewards);
+		$this->executeCommands = $executeCommands;
 	}
 
 	public function getName() : string{ return $this->name; }
@@ -65,6 +72,19 @@ abstract class Quest implements JsonSerializable{
 	public function getCompletedPlayers() : array{ return $this->completedPlayers; }
 
 	public function getRewardMoney() : int{ return $this->rewardMoney; }
+
+	public function getExecuteCommands() : array{ return $this->executeCommands; }
+
+	public function addExecuteCommand(string $command, string $consoleOrPlayer) : void{
+		$this->executeCommands[$command] = $consoleOrPlayer;
+	}
+
+	public function removeExecuteCommand(string $command) : void{
+		$key = array_search($command, $this->executeCommands);
+		if($key !== false){
+			unset($this->executeCommands[$key]);
+		}
+	}
 
 	/** @return Item[] */
 	public function getRewards() : array{ return $this->rewards; }
@@ -142,6 +162,14 @@ abstract class Quest implements JsonSerializable{
 
 		EconomyAPI::getInstance()->addMoney($player, $ev->getRewardMoney());
 
+		foreach($this->executeCommands as $command => $consoleOrPlayer){
+			if($consoleOrPlayer === "console"){
+				$player->getServer()->dispatchCommand(new ConsoleCommandSender(), str_replace("@player", $player->getName(), $command));
+			}else{
+				$player->getServer()->dispatchCommand($player, str_replace("@player", $player->getName(), $command));
+			}
+		}
+
 		$player->sendMessage(SmeltQuest::$prefix . SmeltQuest::$lang->translateString("quest.message.completed", [$this->getName()]));
 
 		$player->sendMessage(SmeltQuest::$prefix . SmeltQuest::$lang->translateString("quest.message.completed.reward", [
@@ -189,7 +217,8 @@ abstract class Quest implements JsonSerializable{
 			"records" => $this->records,
 			"rewardMoney" => $this->rewardMoney,
 			"rewards" => array_map(fn(Item $item) => $item->jsonSerialize(), $this->rewards),
-			"identifier" => static::getIdentifier()
+			"identifier" => static::getIdentifier(),
+			"executeCommands" => $this->executeCommands
 		];
 	}
 

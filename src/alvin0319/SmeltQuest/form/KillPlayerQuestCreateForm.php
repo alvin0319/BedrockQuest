@@ -57,6 +57,7 @@ final class KillPlayerQuestCreateForm implements Form{
 				0,
 				[],
 				$count,
+				[],
 				[]
 			);
 			SmeltQuest::getInstance()->getQuestManager()->registerQuest($quest);

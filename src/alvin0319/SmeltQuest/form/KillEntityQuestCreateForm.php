@@ -66,6 +66,7 @@ final class KillEntityQuestCreateForm implements Form{
 				[],
 				$count,
 				[],
+				[],
 				$entityNetId
 			);
 			SmeltQuest::getInstance()->getQuestManager()->registerQuest($quest);
