@@ -167,7 +167,7 @@ abstract class Quest implements JsonSerializable{
 
 		unset($this->playingPlayers[$player->getLowerCaseName()]);
 
-		if(!$player->isClosed()){
+		if(!$player->isClosed() && $player->getInventory() !== null){
 			$player->getInventory()->addItem(...$ev->getRewards());
 		}
 
