@@ -13,7 +13,9 @@ use pocketmine\command\ConsoleCommandSender;
 use pocketmine\item\Item;
 use pocketmine\Player;
 use function array_map;
+use function array_pop;
 use function array_search;
+use function count;
 use function implode;
 use function microtime;
 use function round;
@@ -39,9 +41,9 @@ abstract class Quest implements JsonSerializable{
 	/** @var Item[] */
 	protected array $rewards = [];
 
-	protected array $messages = [];
-
 	protected array $executeCommands = [];
+	/** @var string[] */
+	protected array $additionalRewardMessage = [];
 
 	public function __construct(
 		string $name,
@@ -52,7 +54,8 @@ abstract class Quest implements JsonSerializable{
 		array $records,
 		int $rewardMoney,
 		array $rewards,
-		array $executeCommands = [], array $messages = []
+		array $executeCommands = [],
+		array $additionalRewardMessage = []
 	){
 		$this->name = $name;
 		$this->description = $description;
@@ -63,13 +66,7 @@ abstract class Quest implements JsonSerializable{
 		$this->rewardMoney = $rewardMoney;
 		$this->rewards = array_map(fn(array $data) => Item::jsonDeserialize($data), $rewards);
 		$this->executeCommands = $executeCommands;
-		$this->messages = $messages;
-	}
-
-	public function getRewardMessages() : array{ return $this->messages; }
-
-	public function addRewardMessage(string $message) : void{
-		$this->messages[] = $message;
+		$this->additionalRewardMessage = $additionalRewardMessage;
 	}
 
 	public function getName() : string{ return $this->name; }
@@ -93,6 +90,14 @@ abstract class Quest implements JsonSerializable{
 		if($key !== false){
 			unset($this->executeCommands[$key]);
 		}
+	}
+
+	public function getAdditionalRewardMessages() : string{
+		return implode("\n", $this->additionalRewardMessage);
+	}
+
+	public function setAdditionalRewardMessage(string $additionalRewardMessage) : void{
+		$this->additionalRewardMessage[] = $additionalRewardMessage;
 	}
 
 	/** @return Item[] */
@@ -167,9 +172,8 @@ abstract class Quest implements JsonSerializable{
 
 		unset($this->playingPlayers[$player->getLowerCaseName()]);
 
-		if(!$player->isClosed() && $player->getInventory() !== null){
+		if($player->getInventory() !== null)
 			$player->getInventory()->addItem(...$ev->getRewards());
-		}
 
 		EconomyAPI::getInstance()->addMoney($player, $ev->getRewardMoney());
 
@@ -183,10 +187,27 @@ abstract class Quest implements JsonSerializable{
 
 		$player->sendMessage(SmeltQuest::$prefix . SmeltQuest::$lang->translateString("quest.message.completed", [$this->getName()]));
 
-		$player->sendMessage(SmeltQuest::$prefix . SmeltQuest::$lang->translateString("quest.message.completed.reward", [
-				$ev->getRewardMoney(),
-				implode(", ", array_map(fn(Item $item) => $item->getName() . " x" . $item->getCount(), $ev->getRewards()))
-			]));
+		$rewards = [];
+		if($ev->getRewards() > 0){
+			$rewards[] = implode(", ", array_map(fn(Item $item) => $item->getName() . " x" . $item->getCount(), $ev->getRewards()));
+		}
+		if($ev->getRewardMoney() > 0){
+			$rewards[] = "$" . $ev->getRewardMoney();
+		}
+		if($ev->getQuest()->getAdditionalRewardMessages() != ""){
+			$rewards[] = $ev->getQuest()->getAdditionalRewardMessages();
+		}
+
+		$last = null;
+		if(count($rewards) > 1){
+			$last = array_pop($rewards);
+		}
+		$message = implode(",", $rewards);
+		if($last !== null){
+			$message .= " and " . $last;
+		}
+
+		$player->sendMessage(SmeltQuest::$prefix . SmeltQuest::$lang->translateString("quest.message.completed.reward", [$message]));
 
 		$this->onPlayerRemoved($player);
 
@@ -230,7 +251,7 @@ abstract class Quest implements JsonSerializable{
 			"rewards" => array_map(fn(Item $item) => $item->jsonSerialize(), $this->rewards),
 			"identifier" => static::getIdentifier(),
 			"executeCommands" => $this->executeCommands,
-			"messages" => $this->messages
+			"additionalRewardMessage" => $this->additionalRewardMessage
 		];
 	}
 

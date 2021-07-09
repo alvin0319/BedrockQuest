@@ -46,7 +46,7 @@ final class SmeltQuest extends PluginBase implements Listener{
 	/** @var QuestSession[] */
 	protected array $sessions = [];
 
-	/** @var Quest[][] */
+	/** @var string[][] */
 	protected array $categories = [];
 
 	public function onLoad() : void{
@@ -78,7 +78,7 @@ final class SmeltQuest extends PluginBase implements Listener{
 		$this->getLogger()->info("Selected $lang as base language");
 
 		if(!is_dir($dir = $this->getDataFolder() . "sessions/")){
-			mkdir($dir, 0777);
+			mkdir($dir);
 		}
 
 		if(file_exists($file = $this->getDataFolder() . "categories.yml")){
@@ -117,7 +117,7 @@ final class SmeltQuest extends PluginBase implements Listener{
 	public function getCategoryFromQuest(Quest $quest) : ?string{
 		foreach($this->categories as $name => $quests){
 			foreach($quests as $q){
-				if($q->getName() === $quest->getName()){
+				if($q == $quest->getName()){
 					return $name;
 				}
 			}

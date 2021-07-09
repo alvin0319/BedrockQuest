@@ -15,8 +15,10 @@ use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\Player;
 use function array_shift;
 use function count;
+use function implode;
 use function in_array;
 use function is_numeric;
+use function trim;
 
 final class QuestCommand extends Command{
 
@@ -103,40 +105,34 @@ final class QuestCommand extends Command{
 				$sender->sendMessage(SmeltQuest::$prefix . "Category {$category} created!");
 				break;
 			case "addcmd":
-				if(count($args) < 3){
-					$sender->sendMessage(SmeltQuest::$prefix . "Usage: /{$commandLabel} addcmd <quest> <cmd> <console|player>");
+				if(count($args) < 4){
+					$sender->sendMessage(SmeltQuest::$prefix . "Usage: /{$commandLabel} addcmd <quest> <cmd> <console|player> <rewardMessage>");
 					$sender->sendMessage(SmeltQuest::$prefix . "Supported tags: @player");
 					return false;
 				}
+
 				$questName = array_shift($args);
 				$command = array_shift($args);
 				$consoleOrPlayer = array_shift($args);
+				$rewardMessage = implode(" ", $args);
+
 				$quest = SmeltQuest::getInstance()->getQuestManager()->getQuest($questName);
 				if($quest === null){
 					$sender->sendMessage(SmeltQuest::$prefix . "Quest {$questName} not found.");
 					return false;
 				}
+
 				if(!in_array($consoleOrPlayer, ["console", "player"])){
 					$sender->sendMessage(SmeltQuest::$prefix . "Invalid command dispatch type (expected \"console\", \"player\", got \"$consoleOrPlayer\")");
 					return false;
 				}
+
 				$quest->addExecuteCommand($command, $consoleOrPlayer);
+				if(trim($rewardMessage) != ""){
+					$quest->setAdditionalRewardMessage($rewardMessage);
+				}
+
 				$sender->sendMessage(SmeltQuest::$prefix . "Command {$command} has been added to quest.");
-				break;
-			case "rewardmessage":
-				if(count($args) < 2){
-					$sender->sendMessage(SmeltQuest::$prefix . "Usage: /{$commandLabel} addcmd <quest> <message>");
-					return false;
-				}
-				$questName = array_shift($args);
-				$message = array_shift($args);
-				$quest = SmeltQuest::getInstance()->getQuestManager()->getQuest($questName);
-				if($quest === null){
-					$sender->sendMessage(SmeltQuest::$prefix . "Quest {$questName} not found.");
-					return false;
-				}
-				$quest->addRewardMessage($message);
-				$sender->sendMessage(SmeltQuest::$prefix . "Message {$message} has been added to quest.");
 				break;
 			default:
 				throw new InvalidCommandSyntaxException();

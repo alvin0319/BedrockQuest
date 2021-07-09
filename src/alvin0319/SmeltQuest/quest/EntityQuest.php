@@ -24,9 +24,9 @@ abstract class EntityQuest extends Quest{
 		int $count,
 		array $executeCommands = [],
 		array $queue = [],
-		array $messages = []
+		array $additionalRewardMessage = []
 	){
-		parent::__construct($name, $description, $clearType, $playingPlayers, $completedPlayers, $records, $rewardMoney, $rewards, $executeCommands, $messages);
+		parent::__construct($name, $description, $clearType, $playingPlayers, $completedPlayers, $records, $rewardMoney, $rewards, $executeCommands, $additionalRewardMessage);
 		$this->count = $count;
 		$this->queue = $queue;
 	}

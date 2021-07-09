@@ -33,7 +33,7 @@ final class BlockPlaceQuest extends BlockQuest{
 			$data["blockQueue"],
 			$data["executeCommands"],
 			$data["allowAllBlocks"],
-			$data["messages"]
+			$data["additionalRewardMessage"]
 		);
 	}
 }
