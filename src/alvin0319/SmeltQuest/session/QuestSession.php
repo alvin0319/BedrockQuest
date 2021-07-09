@@ -123,7 +123,6 @@ final class QuestSession{
 		foreach($this->quests as $name => $quest){
 			if($quest instanceof BlockBreakQuest){
 				if(!$quest->getAllowAllBlocks()){
-					echo "tf\n";
 					if($block->getId() !== $quest->getBlock()->getId()){
 						continue;
 					}
@@ -144,7 +143,6 @@ final class QuestSession{
 		foreach($this->quests as $name => $quest){
 			if($quest instanceof BlockPlaceQuest){
 				if(!$quest->getAllowAllBlocks()){
-					echo "tf?\n";
 					if($block->getId() !== $quest->getBlock()->getId()){
 						continue;
 					}
