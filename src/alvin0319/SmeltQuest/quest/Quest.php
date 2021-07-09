@@ -39,6 +39,8 @@ abstract class Quest implements JsonSerializable{
 	/** @var Item[] */
 	protected array $rewards = [];
 
+	protected array $messages = [];
+
 	protected array $executeCommands = [];
 
 	public function __construct(
@@ -50,7 +52,7 @@ abstract class Quest implements JsonSerializable{
 		array $records,
 		int $rewardMoney,
 		array $rewards,
-		array $executeCommands = []
+		array $executeCommands = [], array $messages = []
 	){
 		$this->name = $name;
 		$this->description = $description;
@@ -61,6 +63,13 @@ abstract class Quest implements JsonSerializable{
 		$this->rewardMoney = $rewardMoney;
 		$this->rewards = array_map(fn(array $data) => Item::jsonDeserialize($data), $rewards);
 		$this->executeCommands = $executeCommands;
+		$this->messages = $messages;
+	}
+
+	public function getRewardMessages() : array{ return $this->messages; }
+
+	public function addRewardMessage(string $message) : void{
+		$this->messages[] = $message;
 	}
 
 	public function getName() : string{ return $this->name; }
@@ -158,7 +167,9 @@ abstract class Quest implements JsonSerializable{
 
 		unset($this->playingPlayers[$player->getLowerCaseName()]);
 
-		$player->getInventory()->addItem(...$ev->getRewards());
+		if(!$player->isClosed()){
+			$player->getInventory()->addItem(...$ev->getRewards());
+		}
 
 		EconomyAPI::getInstance()->addMoney($player, $ev->getRewardMoney());
 
@@ -218,7 +229,8 @@ abstract class Quest implements JsonSerializable{
 			"rewardMoney" => $this->rewardMoney,
 			"rewards" => array_map(fn(Item $item) => $item->jsonSerialize(), $this->rewards),
 			"identifier" => static::getIdentifier(),
-			"executeCommands" => $this->executeCommands
+			"executeCommands" => $this->executeCommands,
+			"messages" => $this->messages
 		];
 	}
 

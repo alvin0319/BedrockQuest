@@ -26,7 +26,8 @@ final class KillPlayerQuest extends EntityQuest{
 			$data["rewards"],
 			$data["count"],
 			$data["executeCommands"],
-			$data["queue"]
+			$data["queue"],
+			$data["messages"]
 		);
 	}
 }

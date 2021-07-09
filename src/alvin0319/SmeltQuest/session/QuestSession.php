@@ -20,12 +20,10 @@ use pocketmine\event\player\PlayerCommandPreprocessEvent;
 use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\Player;
 use function array_values;
-use function explode;
 use function preg_match_all;
 use function str_replace;
 use function stripslashes;
 use function substr;
-use function var_dump;
 
 final class QuestSession{
 

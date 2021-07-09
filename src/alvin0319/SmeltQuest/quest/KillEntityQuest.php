@@ -24,9 +24,10 @@ final class KillEntityQuest extends EntityQuest{
 		int $count,
 		array $executeCommands = [],
 		array $queue = [],
-		int $entityNetId = -1
+		int $entityNetId = -1,
+		array $messages = []
 	){
-		parent::__construct($name, $description, $clearType, $playingPlayers, $completedPlayers, $records, $rewardMoney, $rewards, $count, $executeCommands, $queue);
+		parent::__construct($name, $description, $clearType, $playingPlayers, $completedPlayers, $records, $rewardMoney, $rewards, $count, $executeCommands, $queue, $messages);
 		$this->entityNetId = $entityNetId;
 	}
 
@@ -60,7 +61,8 @@ final class KillEntityQuest extends EntityQuest{
 			$data["count"],
 			$data["executeCommands"],
 			$data["queue"],
-			$data["entityNetId"]
+			$data["entityNetId"],
+			$data["messages"]
 		);
 	}
 }

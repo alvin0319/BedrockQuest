@@ -123,6 +123,21 @@ final class QuestCommand extends Command{
 				$quest->addExecuteCommand($command, $consoleOrPlayer);
 				$sender->sendMessage(SmeltQuest::$prefix . "Command {$command} has been added to quest.");
 				break;
+			case "rewardmessage":
+				if(count($args) < 2){
+					$sender->sendMessage(SmeltQuest::$prefix . "Usage: /{$commandLabel} addcmd <quest> <message>");
+					return false;
+				}
+				$questName = array_shift($args);
+				$message = array_shift($args);
+				$quest = SmeltQuest::getInstance()->getQuestManager()->getQuest($questName);
+				if($quest === null){
+					$sender->sendMessage(SmeltQuest::$prefix . "Quest {$questName} not found.");
+					return false;
+				}
+				$quest->addRewardMessage($message);
+				$sender->sendMessage(SmeltQuest::$prefix . "Message {$message} has been added to quest.");
+				break;
 			default:
 				throw new InvalidCommandSyntaxException();
 		}

@@ -28,9 +28,10 @@ final class CommandInvokeQuest extends Quest{
 		int $rewardMoney,
 		array $rewards,
 		array $executeCommands = [],
-		string $command = ""
+		string $command = "",
+		array $messages = []
 	){
-		parent::__construct($name, $description, $clearType, $playingPlayers, $completedPlayers, $records, $rewardMoney, $rewards, $executeCommands);
+		parent::__construct($name, $description, $clearType, $playingPlayers, $completedPlayers, $records, $rewardMoney, $rewards, $executeCommands, $messages);
 		$this->command = $command;
 	}
 
@@ -86,7 +87,8 @@ final class CommandInvokeQuest extends Quest{
 			$data["rewardMoney"],
 			$data["rewards"],
 			$data["executeCommands"],
-			$data["command"]
+			$data["command"],
+			$data["messages"]
 		);
 	}
 }

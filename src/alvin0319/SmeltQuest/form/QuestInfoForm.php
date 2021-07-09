@@ -48,6 +48,10 @@ final class QuestInfoForm implements Form{
 					return $item->getName() . " x" . $item->getCount();
 				}, $this->quest->getRewards())) . "\n";
 		}
+
+		foreach($this->quest->getRewardMessages() as $msg){
+			$content .= $msg;
+		}
 		if(!$this->quest->canStart($this->player) && $this->quest->isStarted($this->player)){
 			$progress = round($this->quest->getProgress($this->player), 2);
 

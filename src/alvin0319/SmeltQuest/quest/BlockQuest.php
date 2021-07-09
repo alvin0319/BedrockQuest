@@ -32,9 +32,10 @@ abstract class BlockQuest extends Quest{
 		int $count,
 		array $queue,
 		array $executeCommands = [],
-		bool $allowAllBlocks = false
+		bool $allowAllBlocks = false,
+		array $messages = []
 	){
-		parent::__construct($name, $description, $clearType, $playingPlayers, $completedPlayers, $records, $rewardMoney, $rewards, $executeCommands);
+		parent::__construct($name, $description, $clearType, $playingPlayers, $completedPlayers, $records, $rewardMoney, $rewards, $executeCommands, $messages);
 		$this->block = BlockFactory::get($blockId, $blockMeta);
 		$this->count = $count;
 		$this->queue = $queue;

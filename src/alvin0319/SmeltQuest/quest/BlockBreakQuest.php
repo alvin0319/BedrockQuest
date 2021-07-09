@@ -32,7 +32,8 @@ final class BlockBreakQuest extends BlockQuest{
 			$data["count"],
 			$data["blockQueue"],
 			$data["executeCommands"],
-			$data["allowAllBlocks"]
+			$data["allowAllBlocks"],
+			$data["messages"]
 		);
 	}
 }
