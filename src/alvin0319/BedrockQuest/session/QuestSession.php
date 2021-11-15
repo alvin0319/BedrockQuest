@@ -23,7 +23,6 @@ use function array_values;
 use function preg_match_all;
 use function str_replace;
 use function stripslashes;
-use function substr;
 
 final class QuestSession{
 

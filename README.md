@@ -1,2 +1,3 @@
 # SmeltQuest
- An advanced quest plugin for SmeltPE
+
+An advanced quest plugin for SmeltPE

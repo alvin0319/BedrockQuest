@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace alvin0319\BedrockQuest\quest;
 
-use alvin0319\BedrockQuest\event\QuestClearEvent;
 use alvin0319\BedrockQuest\BedrockQuest;
+use alvin0319\BedrockQuest\event\QuestClearEvent;
 use alvin0319\BedrockQuest\util\TimeUtil;
 use JsonSerializable;
 use onebone\economyapi\EconomyAPI;

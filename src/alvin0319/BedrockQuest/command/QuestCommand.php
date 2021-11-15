@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace alvin0319\BedrockQuest\command;
 
+use alvin0319\BedrockQuest\BedrockQuest;
 use alvin0319\BedrockQuest\form\QuestCategoryForm;
 use alvin0319\BedrockQuest\form\QuestCreateForm;
 use alvin0319\BedrockQuest\form\QuestRemoveForm;
-use alvin0319\BedrockQuest\BedrockQuest;
 use muqsit\invmenu\InvMenu;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
@@ -128,7 +128,7 @@ final class QuestCommand extends Command{
 				}
 
 				$quest->addExecuteCommand($command, $consoleOrPlayer);
-				if(trim($rewardMessage) != ""){
+				if(trim($rewardMessage) !== ""){
 					$quest->setAdditionalRewardMessage($rewardMessage);
 				}
 

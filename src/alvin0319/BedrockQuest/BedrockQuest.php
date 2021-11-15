@@ -23,6 +23,7 @@ use pocketmine\lang\BaseLang;
 use pocketmine\Player;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\SingletonTrait;
+use RuntimeException;
 use function array_keys;
 use function array_search;
 use function array_values;
@@ -78,7 +79,7 @@ final class BedrockQuest extends PluginBase implements Listener{
 		$this->getLogger()->info("Selected $lang as base language");
 
 		if(!is_dir($dir = $this->getDataFolder() . "sessions/") && !mkdir($dir) && !is_dir($dir)){
-			throw new \RuntimeException(sprintf('Directory "%s" was not created', $dir));
+			throw new RuntimeException(sprintf('Directory "%s" was not created', $dir));
 		}
 
 		if(file_exists($file = $this->getDataFolder() . "categories.yml")){

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace alvin0319\BedrockQuest\quest;
 
 use alvin0319\BedrockQuest\BedrockQuest;
+use RuntimeException;
 use function array_diff;
 use function array_values;
 use function count;
@@ -33,7 +34,7 @@ final class QuestManager{
 
 	private function loadQuests() : void{
 		if(!is_dir($dir = $this->plugin->getDataFolder() . "quests/") && !mkdir($dir) && !is_dir($dir)){
-			throw new \RuntimeException(sprintf('Directory "%s" was not created', $dir));
+			throw new RuntimeException(sprintf('Directory "%s" was not created', $dir));
 		}
 		$files = array_diff(scandir($dir), [".", ".."]);
 		foreach($files as $file){
@@ -79,7 +80,7 @@ final class QuestManager{
 	}
 
 	public static function fromData(array $data) : ?Quest{
-		return match($data["identifier"]){
+		return match ($data["identifier"]) {
 			BlockBreakQuest::getIdentifier() => BlockBreakQuest::jsonDeserialize($data),
 			BlockPlaceQuest::getIdentifier() => BlockPlaceQuest::jsonDeserialize($data),
 			CommandInvokeQuest::getIdentifier() => CommandInvokeQuest::jsonDeserialize($data),

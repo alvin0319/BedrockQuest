@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace alvin0319\BedrockQuest\form;
 
+use alvin0319\BedrockQuest\BedrockQuest;
 use alvin0319\BedrockQuest\quest\BlockBreakQuest;
 use alvin0319\BedrockQuest\quest\BlockPlaceQuest;
 use alvin0319\BedrockQuest\quest\CommandInvokeQuest;
 use alvin0319\BedrockQuest\quest\KillEntityQuest;
 use alvin0319\BedrockQuest\quest\KillPlayerQuest;
 use alvin0319\BedrockQuest\quest\QuestManager;
-use alvin0319\BedrockQuest\BedrockQuest;
 use pocketmine\form\Form;
 use pocketmine\Player;
 use function count;

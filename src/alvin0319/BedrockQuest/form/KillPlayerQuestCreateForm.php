@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace alvin0319\BedrockQuest\form;
 
-use alvin0319\BedrockQuest\quest\KillPlayerQuest;
 use alvin0319\BedrockQuest\BedrockQuest;
+use alvin0319\BedrockQuest\quest\KillPlayerQuest;
 use pocketmine\form\Form;
 use pocketmine\network\mcpe\protocol\AddActorPacket;
 use pocketmine\Player;

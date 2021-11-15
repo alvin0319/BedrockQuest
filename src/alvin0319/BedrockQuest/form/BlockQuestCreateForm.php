@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace alvin0319\BedrockQuest\form;
 
+use alvin0319\BedrockQuest\BedrockQuest;
 use alvin0319\BedrockQuest\quest\BlockBreakQuest;
 use alvin0319\BedrockQuest\quest\BlockPlaceQuest;
-use alvin0319\BedrockQuest\BedrockQuest;
 use InvalidArgumentException;
 use pocketmine\block\BlockFactory;
 use pocketmine\form\Form;
