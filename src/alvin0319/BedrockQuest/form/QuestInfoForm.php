@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace alvin0319\BedrockQuest\form;
 
 use alvin0319\BedrockQuest\quest\Quest;
-use alvin0319\BedrockQuest\SmeltQuest;
+use alvin0319\BedrockQuest\BedrockQuest;
 use alvin0319\BedrockQuest\util\TimeUtil;
 use pocketmine\form\Form;
 use pocketmine\item\Item;
@@ -96,7 +96,7 @@ final class QuestInfoForm implements Form{
 		if($data === 1){
 			if($this->quest->canStart($player)){
 				$this->quest->start($player);
-				SmeltQuest::getInstance()->getSession($player)->addQuest($this->quest);
+				BedrockQuest::getInstance()->getSession($player)->addQuest($this->quest);
 			}
 		}
 	}

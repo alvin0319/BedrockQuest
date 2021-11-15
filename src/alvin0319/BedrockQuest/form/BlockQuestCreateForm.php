@@ -6,7 +6,7 @@ namespace alvin0319\BedrockQuest\form;
 
 use alvin0319\BedrockQuest\quest\BlockBreakQuest;
 use alvin0319\BedrockQuest\quest\BlockPlaceQuest;
-use alvin0319\BedrockQuest\SmeltQuest;
+use alvin0319\BedrockQuest\BedrockQuest;
 use InvalidArgumentException;
 use pocketmine\block\BlockFactory;
 use pocketmine\form\Form;
@@ -59,7 +59,7 @@ final class BlockQuestCreateForm implements Form{
 
 			if(!$allowAnyCondition){
 				if(!is_numeric($id) || !is_numeric($meta) || !is_numeric($count)){
-					$player->sendMessage(SmeltQuest::$prefix . "ID and Meta must be int");
+					$player->sendMessage(BedrockQuest::$prefix . "ID and Meta must be int");
 					return;
 				}
 				[$id, $meta, $count] = array_map(fn($a) => (int) $a, [$id, $meta, $count]);
@@ -69,7 +69,7 @@ final class BlockQuestCreateForm implements Form{
 				$meta = 0;
 			}
 			if(!is_numeric($count) || ($count = (int) $count) < 1){
-				$player->sendMessage(SmeltQuest::$prefix . "Count must be at least 1");
+				$player->sendMessage(BedrockQuest::$prefix . "Count must be at least 1");
 				return;
 			}
 			try{
@@ -112,15 +112,15 @@ final class BlockQuestCreateForm implements Form{
 						);
 						break;
 					default:
-						$player->sendMessage(SmeltQuest::$prefix . "Invalid quest type given.");
+						$player->sendMessage(BedrockQuest::$prefix . "Invalid quest type given.");
 						return;
 				}
-				SmeltQuest::getInstance()->getQuestManager()->registerQuest($quest);
-				SmeltQuest::getInstance()->addQuestToCategory($this->data["questCategory"], $quest);
-				$player->sendMessage(SmeltQuest::$prefix . "Success! Don't forget to add rewards!");
+				BedrockQuest::getInstance()->getQuestManager()->registerQuest($quest);
+				BedrockQuest::getInstance()->addQuestToCategory($this->data["questCategory"], $quest);
+				$player->sendMessage(BedrockQuest::$prefix . "Success! Don't forget to add rewards!");
 				$success = true;
 			}catch(InvalidArgumentException $e){
-				$player->sendMessage(SmeltQuest::$prefix . "Invalid block $id:$meta");
+				$player->sendMessage(BedrockQuest::$prefix . "Invalid block $id:$meta");
 			}
 		}finally{
 			if(!$success){

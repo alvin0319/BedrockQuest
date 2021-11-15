@@ -4,6 +4,10 @@ author: alvin0319
 main: alvin0319\BedrockQuest\BedrockQuest
 version: 1.0.0
 api: 3.0.0
+
+depend:
+  - EconomyAPI
+
 permissions:
   smeltquest.command.use:
     default: true

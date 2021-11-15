@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace alvin0319\BedrockQuest\form;
 
 use alvin0319\BedrockQuest\quest\CommandInvokeQuest;
-use alvin0319\BedrockQuest\SmeltQuest;
+use alvin0319\BedrockQuest\BedrockQuest;
 use pocketmine\form\Form;
 use pocketmine\Player;
 use function array_shift;
@@ -42,7 +42,7 @@ final class CommandInvokeQuestCreateForm implements Form{
 		$success = false;
 		try{
 			if(trim($command) === ""){
-				$player->sendMessage(SmeltQuest::$prefix . "Invalid command given.");
+				$player->sendMessage(BedrockQuest::$prefix . "Invalid command given.");
 				return;
 			}
 			$quest = new CommandInvokeQuest(
@@ -57,9 +57,9 @@ final class CommandInvokeQuestCreateForm implements Form{
 				[],
 				$command
 			);
-			$player->sendMessage(SmeltQuest::$prefix . "Success! Don't forget to add rewards!");
-			SmeltQuest::getInstance()->getQuestManager()->registerQuest($quest);
-			SmeltQuest::getInstance()->addQuestToCategory($this->data["questCategory"], $quest);
+			$player->sendMessage(BedrockQuest::$prefix . "Success! Don't forget to add rewards!");
+			BedrockQuest::getInstance()->getQuestManager()->registerQuest($quest);
+			BedrockQuest::getInstance()->addQuestToCategory($this->data["questCategory"], $quest);
 			$success = true;
 		}finally{
 			if(!$success){

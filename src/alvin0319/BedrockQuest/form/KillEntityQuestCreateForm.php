@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace alvin0319\BedrockQuest\form;
 
 use alvin0319\BedrockQuest\quest\KillEntityQuest;
-use alvin0319\BedrockQuest\SmeltQuest;
+use alvin0319\BedrockQuest\BedrockQuest;
 use pocketmine\form\Form;
 use pocketmine\network\mcpe\protocol\AddActorPacket;
 use pocketmine\Player;
@@ -50,7 +50,7 @@ final class KillEntityQuestCreateForm implements Form{
 		try{
 			[$entityNetId, $count] = $data;
 			if(!is_numeric($count) || ($count = (int) $count) < 1){
-				$player->sendMessage(SmeltQuest::$prefix . "Count must be at least 1.");
+				$player->sendMessage(BedrockQuest::$prefix . "Count must be at least 1.");
 				return;
 			}
 			$map = array_keys(AddActorPacket::LEGACY_ID_MAP_BC);
@@ -69,9 +69,9 @@ final class KillEntityQuestCreateForm implements Form{
 				[],
 				$entityNetId
 			);
-			SmeltQuest::getInstance()->getQuestManager()->registerQuest($quest);
-			SmeltQuest::getInstance()->addQuestToCategory($this->data["questCategory"], $quest);
-			$player->sendMessage(SmeltQuest::$prefix . "Success! Don't forget to add rewards!");
+			BedrockQuest::getInstance()->getQuestManager()->registerQuest($quest);
+			BedrockQuest::getInstance()->addQuestToCategory($this->data["questCategory"], $quest);
+			$player->sendMessage(BedrockQuest::$prefix . "Success! Don't forget to add rewards!");
 			$success = true;
 		}finally{
 			if(!$success){

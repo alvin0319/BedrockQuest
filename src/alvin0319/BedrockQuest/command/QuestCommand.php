@@ -7,7 +7,7 @@ namespace alvin0319\BedrockQuest\command;
 use alvin0319\BedrockQuest\form\QuestCategoryForm;
 use alvin0319\BedrockQuest\form\QuestCreateForm;
 use alvin0319\BedrockQuest\form\QuestRemoveForm;
-use alvin0319\BedrockQuest\SmeltQuest;
+use alvin0319\BedrockQuest\BedrockQuest;
 use muqsit\invmenu\InvMenu;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
@@ -34,7 +34,7 @@ final class QuestCommand extends Command{
 			return false;
 		}
 		if(!$sender instanceof Player){
-			$sender->sendMessage(SmeltQuest::$prefix . "You cannot run this command on console.");
+			$sender->sendMessage(BedrockQuest::$prefix . "You cannot run this command on console.");
 			return false;
 		}
 		if(!$sender->hasPermission("smeltquest.command.manage")){
@@ -54,13 +54,13 @@ final class QuestCommand extends Command{
 				break;
 			case "reward":
 				if(count($args) < 2){
-					$sender->sendMessage(SmeltQuest::$prefix . "Usage: /{$commandLabel} reward <quest> <item | money> <money(optional)>");
+					$sender->sendMessage(BedrockQuest::$prefix . "Usage: /{$commandLabel} reward <quest> <item | money> <money(optional)>");
 					return false;
 				}
 				$questName = array_shift($args);
 				$rewardType = array_shift($args);
-				if(($quest = SmeltQuest::getInstance()->getQuestManager()->getQuest($questName)) === null){
-					$sender->sendMessage(SmeltQuest::$prefix . "Quest {$questName} does not exist.");
+				if(($quest = BedrockQuest::getInstance()->getQuestManager()->getQuest($questName)) === null){
+					$sender->sendMessage(BedrockQuest::$prefix . "Quest {$questName} does not exist.");
 					return false;
 				}
 				switch($rewardType){
@@ -70,44 +70,44 @@ final class QuestCommand extends Command{
 						$menu->getInventory()->addItem(...$quest->getRewards());
 						$menu->setInventoryCloseListener(function(Player $player) use ($quest, $menu) : void{
 							$quest->setRewards($menu->getInventory()->getContents(false));
-							$player->sendMessage(SmeltQuest::$prefix . "Rewards were successfully updated!");
+							$player->sendMessage(BedrockQuest::$prefix . "Rewards were successfully updated!");
 						});
 						$menu->send($sender);
 						break;
 					case "money":
 						if(count($args) < 1){
-							$sender->sendMessage(SmeltQuest::$prefix . "Usage: /{$commandLabel} reward <quest> <money> <money(Int)>");
+							$sender->sendMessage(BedrockQuest::$prefix . "Usage: /{$commandLabel} reward <quest> <money> <money(Int)>");
 							return false;
 						}
 						$money = array_shift($args);
 						if(!is_numeric($money) || ($money = (int) $money) < 0){
-							$sender->sendMessage(SmeltQuest::$prefix . "Money must be at least 0.");
+							$sender->sendMessage(BedrockQuest::$prefix . "Money must be at least 0.");
 							return false;
 						}
 						$quest->setRewardMoney($money);
-						$sender->sendMessage(SmeltQuest::$prefix . "Reward money has been set to {$money}.");
+						$sender->sendMessage(BedrockQuest::$prefix . "Reward money has been set to {$money}.");
 						break;
 					default:
-						$sender->sendMessage(SmeltQuest::$prefix . "Unknown reward type {$rewardType}");
+						$sender->sendMessage(BedrockQuest::$prefix . "Unknown reward type {$rewardType}");
 				}
 				break;
 			case "category":
 				if(count($args) < 1){
-					$sender->sendMessage(SmeltQuest::$prefix . "Usage: /{$commandLabel} category <category>");
+					$sender->sendMessage(BedrockQuest::$prefix . "Usage: /{$commandLabel} category <category>");
 					return false;
 				}
 				$category = array_shift($args);
-				if(SmeltQuest::getInstance()->getCategory($category) !== null){
-					$sender->sendMessage(SmeltQuest::$prefix . "Category is exist!");
+				if(BedrockQuest::getInstance()->getCategory($category) !== null){
+					$sender->sendMessage(BedrockQuest::$prefix . "Category is exist!");
 					return false;
 				}
-				SmeltQuest::getInstance()->createCategory($category);
-				$sender->sendMessage(SmeltQuest::$prefix . "Category {$category} created!");
+				BedrockQuest::getInstance()->createCategory($category);
+				$sender->sendMessage(BedrockQuest::$prefix . "Category {$category} created!");
 				break;
 			case "addcmd":
 				if(count($args) < 4){
-					$sender->sendMessage(SmeltQuest::$prefix . "Usage: /{$commandLabel} addcmd <quest> <cmd> <console|player> <rewardMessage>");
-					$sender->sendMessage(SmeltQuest::$prefix . "Supported tags: @player");
+					$sender->sendMessage(BedrockQuest::$prefix . "Usage: /{$commandLabel} addcmd <quest> <cmd> <console|player> <rewardMessage>");
+					$sender->sendMessage(BedrockQuest::$prefix . "Supported tags: @player");
 					return false;
 				}
 
@@ -116,14 +116,14 @@ final class QuestCommand extends Command{
 				$consoleOrPlayer = array_shift($args);
 				$rewardMessage = implode(" ", $args);
 
-				$quest = SmeltQuest::getInstance()->getQuestManager()->getQuest($questName);
+				$quest = BedrockQuest::getInstance()->getQuestManager()->getQuest($questName);
 				if($quest === null){
-					$sender->sendMessage(SmeltQuest::$prefix . "Quest {$questName} not found.");
+					$sender->sendMessage(BedrockQuest::$prefix . "Quest {$questName} not found.");
 					return false;
 				}
 
 				if(!in_array($consoleOrPlayer, ["console", "player"])){
-					$sender->sendMessage(SmeltQuest::$prefix . "Invalid command dispatch type (expected \"console\", \"player\", got \"$consoleOrPlayer\")");
+					$sender->sendMessage(BedrockQuest::$prefix . "Invalid command dispatch type (expected \"console\", \"player\", got \"$consoleOrPlayer\")");
 					return false;
 				}
 
@@ -132,7 +132,7 @@ final class QuestCommand extends Command{
 					$quest->setAdditionalRewardMessage($rewardMessage);
 				}
 
-				$sender->sendMessage(SmeltQuest::$prefix . "Command {$command} has been added to quest.");
+				$sender->sendMessage(BedrockQuest::$prefix . "Command {$command} has been added to quest.");
 				break;
 			default:
 				throw new InvalidCommandSyntaxException();

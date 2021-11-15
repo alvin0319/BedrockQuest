@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace alvin0319\BedrockQuest\quest;
 
-use alvin0319\BedrockQuest\SmeltQuest;
+use alvin0319\BedrockQuest\BedrockQuest;
 use function array_diff;
 use function array_values;
 use function count;
@@ -24,9 +24,9 @@ final class QuestManager{
 	/** @var Quest[] */
 	protected array $quests = [];
 
-	protected SmeltQuest $plugin;
+	protected BedrockQuest $plugin;
 
-	public function __construct(SmeltQuest $plugin){
+	public function __construct(BedrockQuest $plugin){
 		$this->plugin = $plugin;
 		$this->loadQuests();
 	}

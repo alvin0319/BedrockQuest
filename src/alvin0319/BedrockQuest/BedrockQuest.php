@@ -35,7 +35,7 @@ use function mkdir;
 use function yaml_emit;
 use function yaml_parse;
 
-final class SmeltQuest extends PluginBase implements Listener{
+final class BedrockQuest extends PluginBase implements Listener{
 	use SingletonTrait;
 
 	public static string $prefix = "";
@@ -77,8 +77,8 @@ final class SmeltQuest extends PluginBase implements Listener{
 
 		$this->getLogger()->info("Selected $lang as base language");
 
-		if(!is_dir($dir = $this->getDataFolder() . "sessions/")){
-			mkdir($dir);
+		if(!is_dir($dir = $this->getDataFolder() . "sessions/") && !mkdir($dir) && !is_dir($dir)){
+			throw new \RuntimeException(sprintf('Directory "%s" was not created', $dir));
 		}
 
 		if(file_exists($file = $this->getDataFolder() . "categories.yml")){
@@ -117,7 +117,7 @@ final class SmeltQuest extends PluginBase implements Listener{
 	public function getCategoryFromQuest(Quest $quest) : ?string{
 		foreach($this->categories as $name => $quests){
 			foreach($quests as $q){
-				if($q == $quest->getName()){
+				if($q === $quest->getName()){
 					return $name;
 				}
 			}

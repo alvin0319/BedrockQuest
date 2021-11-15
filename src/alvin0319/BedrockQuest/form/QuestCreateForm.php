@@ -10,7 +10,7 @@ use alvin0319\BedrockQuest\quest\CommandInvokeQuest;
 use alvin0319\BedrockQuest\quest\KillEntityQuest;
 use alvin0319\BedrockQuest\quest\KillPlayerQuest;
 use alvin0319\BedrockQuest\quest\QuestManager;
-use alvin0319\BedrockQuest\SmeltQuest;
+use alvin0319\BedrockQuest\BedrockQuest;
 use pocketmine\form\Form;
 use pocketmine\Player;
 use function count;
@@ -34,7 +34,7 @@ final class QuestCreateForm implements Form{
 				[
 					"type" => "dropdown",
 					"text" => "Quest category",
-					"options" => SmeltQuest::getInstance()->getCategories()
+					"options" => BedrockQuest::getInstance()->getCategories()
 				],
 				[
 					"type" => "dropdown",
@@ -56,8 +56,8 @@ final class QuestCreateForm implements Form{
 		}
 		[$name, $description, $questCategoryInt, $questTypeInt, $clearType] = $data;
 
-		if(trim($name) === "" || SmeltQuest::getInstance()->getQuestManager()->getQuest($name) !== null){
-			$player->sendMessage(SmeltQuest::$prefix . "Quest name is empty or duplicate with another quest.");
+		if(trim($name) === "" || BedrockQuest::getInstance()->getQuestManager()->getQuest($name) !== null){
+			$player->sendMessage(BedrockQuest::$prefix . "Quest name is empty or duplicate with another quest.");
 			return;
 		}
 		$questType = QuestManager::getQuests()[$questTypeInt];
@@ -66,7 +66,7 @@ final class QuestCreateForm implements Form{
 			"description" => $description,
 			"clearType" => $clearType,
 			"questType" => $questType,
-			"questCategory" => SmeltQuest::getInstance()->getCategories()[$questCategoryInt]
+			"questCategory" => BedrockQuest::getInstance()->getCategories()[$questCategoryInt]
 		];
 		switch($questType){
 			case BlockBreakQuest::getIdentifier():

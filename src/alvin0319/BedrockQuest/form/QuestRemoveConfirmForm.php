@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace alvin0319\BedrockQuest\form;
 
 use alvin0319\BedrockQuest\quest\Quest;
-use alvin0319\BedrockQuest\SmeltQuest;
+use alvin0319\BedrockQuest\BedrockQuest;
 use pocketmine\form\Form;
 use pocketmine\Player;
 
@@ -34,8 +34,8 @@ final class QuestRemoveConfirmForm implements Form{
 		if(!$data){
 			return;
 		}
-		SmeltQuest::getInstance()->getQuestManager()->unregisterQuest($this->quest);
-		SmeltQuest::getInstance()->removeQuestFromCategory(SmeltQuest::getInstance()->getCategoryFromQuest($this->quest), $this->quest);
-		$player->sendMessage(SmeltQuest::$prefix . "You have sucessfully removed {$this->quest->getName()} quest.");
+		BedrockQuest::getInstance()->getQuestManager()->unregisterQuest($this->quest);
+		BedrockQuest::getInstance()->removeQuestFromCategory(BedrockQuest::getInstance()->getCategoryFromQuest($this->quest), $this->quest);
+		$player->sendMessage(BedrockQuest::$prefix . "You have sucessfully removed {$this->quest->getName()} quest.");
 	}
 }

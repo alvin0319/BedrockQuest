@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace alvin0319\BedrockQuest\quest;
 
 use alvin0319\BedrockQuest\event\QuestClearEvent;
-use alvin0319\BedrockQuest\SmeltQuest;
+use alvin0319\BedrockQuest\BedrockQuest;
 use alvin0319\BedrockQuest\util\TimeUtil;
 use JsonSerializable;
 use onebone\economyapi\EconomyAPI;
@@ -148,8 +148,8 @@ abstract class Quest implements JsonSerializable{
 			return;
 		}
 		$this->playingPlayers[$player->getLowerCaseName()] = microtime(true);
-		$player->sendMessage(SmeltQuest::$prefix . SmeltQuest::$lang->translateString("quest.message.started", [$this->getName()]));
-		$player->sendMessage(SmeltQuest::$prefix . SmeltQuest::$lang->translateString("quest.message.started.goal", [$this->getGoal()]));
+		$player->sendMessage(BedrockQuest::$prefix . BedrockQuest::$lang->translateString("quest.message.started", [$this->getName()]));
+		$player->sendMessage(BedrockQuest::$prefix . BedrockQuest::$lang->translateString("quest.message.started.goal", [$this->getGoal()]));
 	}
 
 	public function canComplete(Player $player) : bool{
@@ -184,7 +184,7 @@ abstract class Quest implements JsonSerializable{
 			}
 		}
 
-		$player->sendMessage(SmeltQuest::$prefix . SmeltQuest::$lang->translateString("quest.message.completed", [$this->getName()]));
+		$player->sendMessage(BedrockQuest::$prefix . BedrockQuest::$lang->translateString("quest.message.completed", [$this->getName()]));
 
 		$rewards = [];
 		if($ev->getRewards() > 0){
@@ -206,7 +206,7 @@ abstract class Quest implements JsonSerializable{
 			$message .= " and " . $last;
 		}
 
-		$player->sendMessage(SmeltQuest::$prefix . SmeltQuest::$lang->translateString("quest.message.completed.reward", [$message]));
+		$player->sendMessage(BedrockQuest::$prefix . BedrockQuest::$lang->translateString("quest.message.completed.reward", [$message]));
 
 		$this->onPlayerRemoved($player);
 
@@ -224,13 +224,13 @@ abstract class Quest implements JsonSerializable{
 
 		$this->records[$player->getName()] = $timeTook;
 
-		$player->sendMessage(SmeltQuest::$prefix . SmeltQuest::$lang->translateString("quest.message.completed.newrecord", [
-				SmeltQuest::$lang->translateString("time.format", [
+		$player->sendMessage(BedrockQuest::$prefix . BedrockQuest::$lang->translateString("quest.message.completed.newrecord", [
+				BedrockQuest::$lang->translateString("time.format", [
 					$previousTimestamp[1],
 					$previousTimestamp[2],
 					$previousTimestamp[3]
 				]),
-				SmeltQuest::$lang->translateString("time.format", [
+				BedrockQuest::$lang->translateString("time.format", [
 					$timeTookTimestamp[1],
 					$timeTookTimestamp[2],
 					$timeTookTimestamp[3]

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace alvin0319\BedrockQuest\form;
 
 use alvin0319\BedrockQuest\quest\Quest;
-use alvin0319\BedrockQuest\SmeltQuest;
+use alvin0319\BedrockQuest\BedrockQuest;
 use pocketmine\form\Form;
 use pocketmine\Player;
 use function array_map;
@@ -16,7 +16,7 @@ final class QuestRemoveForm implements Form{
 	protected array $quests = [];
 
 	public function jsonSerialize() : array{
-		$this->quests = SmeltQuest::getInstance()->getQuestManager()->getQuestList();
+		$this->quests = BedrockQuest::getInstance()->getQuestManager()->getQuestList();
 		return [
 			"type" => "form",
 			"title" => "Quest remove",
