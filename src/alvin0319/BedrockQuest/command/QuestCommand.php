@@ -24,7 +24,7 @@ final class QuestCommand extends Command{
 
 	public function __construct(){
 		parent::__construct("quest", "Open the Quest UI");
-		$this->setPermission("smeltquest.command.use");
+		$this->setPermission("bedrockquest.command.use");
 		$this->setAliases(["q"]);
 		$this->setUsage("/{$this->getName()} <create|remove|reward|category|addcmd>");
 	}
@@ -37,7 +37,7 @@ final class QuestCommand extends Command{
 			$sender->sendMessage(BedrockQuest::$prefix . "You cannot run this command on console.");
 			return false;
 		}
-		if(!$sender->hasPermission("smeltquest.command.manage")){
+		if(!$sender->hasPermission("bedrockquest.command.manage")){
 			$sender->sendForm(new QuestCategoryForm());
 			return true;
 		}

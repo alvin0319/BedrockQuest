@@ -9,8 +9,8 @@ depend:
   - EconomyAPI
 
 permissions:
-  smeltquest.command.use:
+  bedrockquest.command.use:
     default: true
-  smeltquest.command.manage:
+  bedrockquest.command.manage:
     default: op
 ...
