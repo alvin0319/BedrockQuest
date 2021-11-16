@@ -36,6 +36,6 @@ final class QuestRemoveConfirmForm implements Form{
 		}
 		BedrockQuest::getInstance()->getQuestManager()->unregisterQuest($this->quest);
 		BedrockQuest::getInstance()->removeQuestFromCategory(BedrockQuest::getInstance()->getCategoryFromQuest($this->quest), $this->quest);
-		$player->sendMessage(BedrockQuest::$prefix . "You have sucessfully removed {$this->quest->getName()} quest.");
+		$player->sendMessage(BedrockQuest::$prefix . "You have successfully removed {$this->quest->getName()} quest.");
 	}
 }

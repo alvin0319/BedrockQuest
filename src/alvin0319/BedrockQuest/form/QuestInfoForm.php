@@ -48,7 +48,7 @@ final class QuestInfoForm implements Form{
 					return $item->getName() . " x" . $item->getCount();
 				}, $this->quest->getRewards())) . "\n";
 		}
-		if($this->quest->getAdditionalRewardMessages() != ""){
+		if($this->quest->getAdditionalRewardMessages() !== ""){
 			$content .= $this->quest->getAdditionalRewardMessages() . "\n";
 		}
 
@@ -93,11 +93,9 @@ final class QuestInfoForm implements Form{
 		if($data === null){
 			return;
 		}
-		if($data === 1){
-			if($this->quest->canStart($player)){
-				$this->quest->start($player);
-				BedrockQuest::getInstance()->getSession($player)->addQuest($this->quest);
-			}
+		if(($data === 1) && $this->quest->canStart($player)){
+			$this->quest->start($player);
+			BedrockQuest::getInstance()->getSession($player)->addQuest($this->quest);
 		}
 	}
 }
